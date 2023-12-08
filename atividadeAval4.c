@@ -1,157 +1,123 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef struct Veiculo
-{
+
+typedef struct Veiculo {
     char proprietario[50];
     char combustivel[10];
     char modelo[50];
-    char cor[15];
-    char chassi[17];
+    char cor[20];
+    char chassi[20];
     int ano;
-    char placa[7];
+    char placa[8];
     struct Veiculo *prox;
 } Veiculo;
-Veiculo *novoVeiculo()
-{
-    Veiculo *novo = (Veiculo *)malloc(sizeof(Veiculo));
-    novo->prox = NULL;
+
+Veiculo* inicializa() {
+    return NULL;
+}
+
+Veiculo* adiciona(Veiculo *lista) {
+    Veiculo *novo = (Veiculo*)malloc(sizeof(Veiculo));
+    printf("Digite o proprietario do veiculo: ");
+    scanf("%s", novo->proprietario);
+    printf("Digite o modelo do veiculo: ");
+    scanf("%s", novo->modelo);
+    printf("Digite a cor do veiculo: ");
+    scanf("%s", novo->cor);
+    printf("Digite o ano do veiculo: ");
+    scanf("%d", &novo->ano);
+    printf("Digite o chassi do veiculo: ");
+    scanf("%s", novo->chassi);
+    printf("Digite a placa do veiculo: ");
+    scanf("%s", novo->placa);
+    printf("Digite o combustivel do veiculo: ");
+    scanf("%s", novo->combustivel);
+    novo->prox = lista;
     return novo;
 }
-void adicionarVeiculo(Veiculo **inicio, Veiculo *novo)
-{
-    if (*inicio == NULL)
-    {
-        *inicio = novo;
-    }
-    else
-    {
-        Veiculo *aux = *inicio;
-        while (aux->prox != NULL)
-        {
-            aux = aux->prox;
+
+
+void listaDiesel2010(Veiculo* lista) {
+    Veiculo* p;
+    for (p = lista; p != NULL; p = p->prox) {
+        if (strcmp(p->combustivel, "diesel") == 0 && p->ano >= 2010) {
+            printf("%s\n", p->proprietario);
         }
-        aux->prox = novo;
     }
 }
-void listarDiesel2010(Veiculo *inicio)
-{
-    Veiculo *aux = inicio;
-    while (aux != NULL)
-    {
-        if (strcmp(aux->combustivel, "diesel") == 0 && aux->ano >= 2010)
-        {
-            printf("%s\n", aux->proprietario);
+
+void listaPlacaJ(Veiculo* lista) {
+    Veiculo* p;
+    for (p = lista; p != NULL; p = p->prox) {
+        if (p->placa[0] == 'J' && (p->placa[7] == '0' || p->placa[7] == '2' || p->placa[7] == '4' || p->placa[7] == '7')) {
+            printf("%s - %s\n", p->placa, p->proprietario);
         }
-        aux = aux->prox;
     }
 }
-void listarPlacasJ(Veiculo *inicio)
-{
-    Veiculo *aux = inicio;
-    while (aux != NULL)
-    {
-        if (aux->placa[0] == 'J' && (aux->placa[6] == '0' || aux->placa[6] == '2' || aux->placa[6] == '4' || aux->placa[6] == '7'))
-        {
-            printf("%s - %s\n", aux->placa, aux->proprietario);
+
+void listaVogalPar(Veiculo* lista) {
+    Veiculo* p;
+    for (p = lista; p != NULL; p = p->prox) {
+        if ((p->placa[1] == 'A' || p->placa[1] == 'E' || p->placa[1] == 'I' || p->placa[1] == 'O' || p->placa[1] == 'U') && ((p->placa[4] - '0' + p->placa[5] - '0' + p->placa[6] - '0' + p->placa[7] - '0') % 2 == 0)) {
+            printf("%s - %s\n", p->modelo, p->cor);
         }
-        aux = aux->prox;
     }
 }
-void listarModeloCor(Veiculo *inicio)
-{
-    Veiculo *aux = inicio;
-    while (aux != NULL)
-    {
-        if (aux->placa[1] == 'A' || aux->placa[1] == 'E' || aux->placa[1] == 'I' || aux->placa[1] == 'O' || aux->placa[1] == 'U')
-        {
-            int soma = aux->placa[3] - '0' + aux->placa[4] - '0' + aux->placa[5] - '0' + aux->placa[6] - '0';
-            if (soma % 2 == 0)
-            {
-                printf("%s - %s\n", aux->modelo, aux->cor);
-            }
+
+Veiculo* trocaProprietario(Veiculo* lista, char* chassi, char* novo_proprietario) {
+    Veiculo* p;
+    for (p = lista; p != NULL; p = p->prox) {
+        if (strcmp(p->chassi, chassi) == 0 && strchr(p->placa, '0') == NULL) {
+            strcpy(p->proprietario, novo_proprietario);
+            return lista;
         }
-        aux = aux->prox;
     }
+    return NULL;
 }
-void trocarProprietario(Veiculo *inicio, char *chassi, char *novoProprietario)
-{
-    Veiculo *aux = inicio;
-    while (aux != NULL)
-    {
-        if (strcmp(aux->chassi, chassi) == 0)
-        {
-            int i;
-            for (i = 0; i < 7; i++)
-            {
-                if (aux->placa[i] == '0')
-                {
-                    return;
-                }
-            }
-            strcpy(aux->proprietario, novoProprietario);
-            return;
-        }
-        aux = aux->prox;
-    }
-}
-int main()
-{
-    Veiculo *inicio = NULL;
+
+int main() {
+    
+    Veiculo* lista = inicializa();
     int opcao;
-    do
-    {
-        printf("escolha uma opção: ");
-        printf("1- cadastre um novo veiculo");
-        printf("\n2- listar proprietários de carros a diesel a partir de 2010");
-        printf("\n3- listar placas que começam com 'J' e terminam com 0, 2, 4 ou 7");
-        printf("\n4- listar modelo e cor dos veículos cujas placas possuem como segunda letra uma vogal e cuja soma dos valores numéricos fornece um número par");
-        printf("\n5- trocar o proprietário de um veículo");
-        printf("\n6- sair\n");
+    Veiculo* p;
+
+    do {
+        printf("1-Adicionar veiculo:");
+        printf("\n2-Listar veiculos diesel acima de 2010: ");
+        printf("\n3-Listar carros de placa J e final 0, 2, 4 ou 7: ");
+        printf("\n4-Listar carros de placa com segunda letra A, E, I, O ou U e par: ");
+        printf("\n5-Trocar proprietario: ");
+        printf("\n6-Sair: ");
         scanf("%d", &opcao);
 
-        switch (opcao)
-        {
-        case 1:
-            Veiculo*novo = novoVeiculo();
-            printf("digite o proprietário: ");
-            scanf("%s", novo->proprietario);
-            printf("digite o combustivel: ");
-            scanf("%s", novo->combustivel);
-            printf("digite o modelo: ");
-            scanf("%s", novo->modelo);
-            printf("digite a cor: ");
-            scanf("%s", novo->cor);
-            printf("digite o ano: ");
-            scanf("%d", &novo->ano);
-            printf("digite o chassi: ");
-            scanf("%s", novo->chassi);
-            printf("digite a placa: ");
-            scanf("%s", novo->placa);
-            adicionarVeiculo(&inicio, novo);
+        switch (opcao) {
+            case 1:
+            lista = adiciona(lista);
             break;
-        case 2:
-            listarDiesel2010(inicio);
+            case 2:
+            listaDiesel2010(lista);
             break;
-        case 3:
-            listarPlacasJ(inicio);
+            case 3:
+            listaPlacaJ(lista);
             break;
-        case 4:
-            listarModeloCor(inicio);
+            case 4:
+            listaVogalPar(lista);
             break;
-        case 5:
-            Veiculo *novo = novoVeiculo();
-            printf("digite o chassi: ");
-            scanf("%s", novo->chassi);
-            printf("digite o novo proprietário: ");
-            scanf("%s", novo->proprietario);
-            trocarProprietario(inicio, novo->chassi, novo->proprietario);
+            case 5:
+            printf("Digite o chassi do veiculo: ");
+            scanf("%s", p->chassi);
+            printf("Digite o novo proprietario: ");
+            scanf("%s", p->proprietario);
+            lista = trocaProprietario(lista, p->chassi, p->proprietario);
             break;
-        default:
-            printf("opção não encontrada");
+            case 6:
             break;
-        }
+            default:
+            printf("Opcao invalida\n");
+        } 
     } while (opcao != 6);
-
+    
     return 0;
 }
+
